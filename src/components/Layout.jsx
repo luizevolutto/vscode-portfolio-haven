@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { FileIcon, FolderIcon, SettingsIcon, SearchIcon, GitBranchIcon, BellIcon } from 'lucide-react';
+import { FileIcon, FolderIcon, SettingsIcon, SearchIcon, GitBranchIcon, BellIcon, ChevronRightIcon, ChevronLeftIcon } from 'lucide-react';
 import SettingsMenu from './SettingsMenu';
 
 const Layout = () => {
@@ -8,6 +8,7 @@ const Layout = () => {
   const [activeTab, setActiveTab] = useState('Home');
   const [theme, setTheme] = useState('dark');
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isExplorerOpen, setIsExplorerOpen] = useState(true);
   const location = useLocation();
 
   const pages = [
@@ -42,6 +43,10 @@ const Layout = () => {
     setIsSettingsOpen(!isSettingsOpen);
   };
 
+  const toggleExplorer = () => {
+    setIsExplorerOpen(!isExplorerOpen);
+  };
+
   useEffect(() => {
     document.body.className = theme;
   }, [theme]);
@@ -71,7 +76,9 @@ const Layout = () => {
       <div className="flex flex-1 overflow-hidden">
         {/* Left sidebar */}
         <div className={`w-12 ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-100'} flex flex-col items-center py-4 space-y-4`}>
-          <FileIcon size={24} />
+          <button onClick={toggleExplorer} className={`p-2 rounded-full ${isExplorerOpen ? 'bg-gray-700' : ''} hover:bg-gray-700 transition-colors`}>
+            <FileIcon size={24} />
+          </button>
           <SearchIcon size={24} />
           <GitBranchIcon size={24} />
           <button onClick={toggleSettings} className="p-2 rounded-full hover:bg-gray-700 transition-colors">
@@ -80,32 +87,34 @@ const Layout = () => {
         </div>
 
         {/* File explorer */}
-        <div className={`w-64 ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-200'} p-4 overflow-y-auto`}>
-          <h2 className="text-sm uppercase mb-2">Explorer</h2>
-          <div className="mb-4">
-            <div className="flex items-center mb-2">
-              <FolderIcon className="mr-2" size={16} />
-              <span>Pages</span>
+        {isExplorerOpen && (
+          <div className={`w-64 ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-200'} p-4 overflow-y-auto`}>
+            <h2 className="text-sm uppercase mb-2">Explorer</h2>
+            <div className="mb-4">
+              <div className="flex items-center mb-2">
+                <FolderIcon className="mr-2" size={16} />
+                <span>Pages</span>
+              </div>
+              {pages.map((page) => (
+                <Link
+                  key={page.name}
+                  to={page.path}
+                  className={`flex items-center pl-6 py-1 ${
+                    location.pathname === page.path
+                      ? theme === 'dark'
+                        ? 'bg-gray-700'
+                        : 'bg-gray-300'
+                      : ''
+                  } hover:${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-300'}`}
+                  onClick={() => handleTabClick(page.name)}
+                >
+                  <FileIcon className="mr-2" size={16} />
+                  <span>{page.name}</span>
+                </Link>
+              ))}
             </div>
-            {pages.map((page) => (
-              <Link
-                key={page.name}
-                to={page.path}
-                className={`flex items-center pl-6 py-1 ${
-                  location.pathname === page.path
-                    ? theme === 'dark'
-                      ? 'bg-gray-700'
-                      : 'bg-gray-300'
-                    : ''
-                } hover:${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-300'}`}
-                onClick={() => handleTabClick(page.name)}
-              >
-                <FileIcon className="mr-2" size={16} />
-                <span>{page.name}</span>
-              </Link>
-            ))}
           </div>
-        </div>
+        )}
 
         {/* Main content area */}
         <div className="flex-1 flex flex-col">
