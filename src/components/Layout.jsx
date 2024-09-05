@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { FileIcon, FolderIcon, SettingsIcon, SearchIcon, GitBranchIcon, BellIcon, ChevronRightIcon, ChevronLeftIcon, XIcon } from 'lucide-react';
 import SettingsMenu from './SettingsMenu';
+import TabManager from './TabManager';
 
 const Layout = () => {
   const [openTabs, setOpenTabs] = useState(['Home']);
@@ -32,13 +33,15 @@ const Layout = () => {
   const handleTabClose = (pageName, e) => {
     e.preventDefault();
     e.stopPropagation();
-    const newTabs = openTabs.filter((tab) => tab !== pageName);
-    setOpenTabs(newTabs);
-    if (activeTab === pageName) {
-      setActiveTab(newTabs[newTabs.length - 1] || 'Home');
+    if (pageName !== 'Home') {
+      const newTabs = openTabs.filter((tab) => tab !== pageName);
+      setOpenTabs(newTabs);
+      if (activeTab === pageName) {
+        setActiveTab(newTabs[newTabs.length - 1] || 'Home');
+      }
+      const newOpenFiles = openFiles.filter((file) => file !== pageName);
+      setOpenFiles(newOpenFiles);
     }
-    const newOpenFiles = openFiles.filter((file) => file !== pageName);
-    setOpenFiles(newOpenFiles);
   };
 
   const toggleTheme = () => {
@@ -107,12 +110,14 @@ const Layout = () => {
                   onClick={() => handleTabClick(file)}
                 >
                   <span>{file}</span>
-                  <button
-                    onClick={(e) => handleTabClose(file, e)}
-                    className={`${theme === 'dark' ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-black'}`}
-                  >
-                    <XIcon size={14} />
-                  </button>
+                  {file !== 'Home' && (
+                    <button
+                      onClick={(e) => handleTabClose(file, e)}
+                      className={`${theme === 'dark' ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-black'}`}
+                    >
+                      <XIcon size={14} />
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
@@ -147,32 +152,13 @@ const Layout = () => {
         {/* Main content area */}
         <div className="flex-1 flex flex-col">
           {/* Tabs */}
-          <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-200'} flex`}>
-            {openTabs.map((tab) => (
-              <div
-                key={tab}
-                className={`px-4 py-2 flex items-center cursor-pointer ${
-                  activeTab === tab
-                    ? theme === 'dark'
-                      ? 'bg-gray-900'
-                      : 'bg-white'
-                    : theme === 'dark'
-                    ? 'bg-gray-800'
-                    : 'bg-gray-200'
-                }`}
-                onClick={() => setActiveTab(tab)}
-              >
-                <FileIcon size={16} className="mr-2" />
-                <span>{tab}</span>
-                <button
-                  className={`ml-2 ${theme === 'dark' ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-black'}`}
-                  onClick={(e) => handleTabClose(tab, e)}
-                >
-                  ×
-                </button>
-              </div>
-            ))}
-          </div>
+          <TabManager
+            openTabs={openTabs}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            handleTabClose={handleTabClose}
+            theme={theme}
+          />
 
           {/* Page content */}
           <div className={`flex-1 p-4 overflow-auto ${theme === 'dark' ? 'bg-gray-900' : 'bg-white'}`}>
