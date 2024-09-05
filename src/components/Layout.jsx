@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { FileIcon, FolderIcon, SettingsIcon, SearchIcon, GitBranchIcon, BellIcon } from 'lucide-react';
-import ThemeToggle from './ThemeToggle';
+import SettingsMenu from './SettingsMenu';
 
 const Layout = () => {
   const [openTabs, setOpenTabs] = useState(['Home']);
   const [activeTab, setActiveTab] = useState('Home');
   const [theme, setTheme] = useState('dark');
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const location = useLocation();
 
   const pages = [
@@ -37,6 +38,10 @@ const Layout = () => {
     setTheme(theme === 'dark' ? 'light' : 'dark');
   };
 
+  const toggleSettings = () => {
+    setIsSettingsOpen(!isSettingsOpen);
+  };
+
   useEffect(() => {
     document.body.className = theme;
   }, [theme]);
@@ -57,7 +62,9 @@ const Layout = () => {
         </div>
         <div className="flex items-center space-x-2">
           <SearchIcon size={18} />
-          <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
+          <button onClick={toggleSettings} className="p-2 rounded-full hover:bg-gray-700 transition-colors">
+            <SettingsIcon size={18} />
+          </button>
         </div>
       </div>
 
@@ -67,7 +74,9 @@ const Layout = () => {
           <FileIcon size={24} />
           <SearchIcon size={24} />
           <GitBranchIcon size={24} />
-          <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
+          <button onClick={toggleSettings} className="p-2 rounded-full hover:bg-gray-700 transition-colors">
+            <SettingsIcon size={24} />
+          </button>
         </div>
 
         {/* File explorer */}
@@ -148,6 +157,11 @@ const Layout = () => {
           <span>JavaScript</span>
         </div>
       </div>
+
+      {/* Settings Menu */}
+      {isSettingsOpen && (
+        <SettingsMenu theme={theme} toggleTheme={toggleTheme} closeSettings={() => setIsSettingsOpen(false)} />
+      )}
     </div>
   );
 };
