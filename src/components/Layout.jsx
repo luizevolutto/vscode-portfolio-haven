@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { FileIcon, FolderIcon, SettingsIcon, SearchIcon, GitBranchIcon, BellIcon, ChevronRightIcon, ChevronLeftIcon } from 'lucide-react';
+import { FileIcon, FolderIcon, SettingsIcon, SearchIcon, GitBranchIcon, BellIcon, ChevronRightIcon, ChevronLeftIcon, XIcon } from 'lucide-react';
 import SettingsMenu from './SettingsMenu';
 
 const Layout = () => {
@@ -9,6 +9,7 @@ const Layout = () => {
   const [theme, setTheme] = useState('dark');
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isExplorerOpen, setIsExplorerOpen] = useState(true);
+  const [openFiles, setOpenFiles] = useState(['Home']);
   const location = useLocation();
 
   const pages = [
@@ -23,6 +24,9 @@ const Layout = () => {
       setOpenTabs([...openTabs, pageName]);
     }
     setActiveTab(pageName);
+    if (!openFiles.includes(pageName)) {
+      setOpenFiles([...openFiles, pageName]);
+    }
   };
 
   const handleTabClose = (pageName, e) => {
@@ -33,6 +37,8 @@ const Layout = () => {
     if (activeTab === pageName) {
       setActiveTab(newTabs[newTabs.length - 1] || 'Home');
     }
+    const newOpenFiles = openFiles.filter((file) => file !== pageName);
+    setOpenFiles(newOpenFiles);
   };
 
   const toggleTheme = () => {
@@ -89,6 +95,28 @@ const Layout = () => {
         {/* File explorer */}
         {isExplorerOpen && (
           <div className={`w-64 ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-200'} p-4 overflow-y-auto`}>
+            {/* Opened Files section */}
+            <div className="mb-4">
+              <h2 className="text-sm uppercase mb-2">Opened Files</h2>
+              {openFiles.map((file) => (
+                <div
+                  key={file}
+                  className={`flex items-center justify-between py-1 px-2 ${
+                    activeTab === file ? (theme === 'dark' ? 'bg-gray-700' : 'bg-gray-300') : ''
+                  } hover:${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-300'} cursor-pointer`}
+                  onClick={() => handleTabClick(file)}
+                >
+                  <span>{file}</span>
+                  <button
+                    onClick={(e) => handleTabClose(file, e)}
+                    className={`${theme === 'dark' ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-black'}`}
+                  >
+                    <XIcon size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
+
             <h2 className="text-sm uppercase mb-2">Explorer</h2>
             <div className="mb-4">
               <div className="flex items-center mb-2">
