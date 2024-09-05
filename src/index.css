@@ -74,3 +74,20 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* VS Code-like styles */
+body {
+  font-family: 'Consolas', 'Courier New', monospace;
+}
+
+.bg-vscode-dark {
+  background-color: #1e1e1e;
+}
+
+.text-vscode-light {
+  color: #d4d4d4;
+}
+
+.border-vscode {
+  border-color: #2d2d2d;
+}
