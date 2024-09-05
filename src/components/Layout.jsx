@@ -9,7 +9,7 @@ const Layout = () => {
   const [activeTab, setActiveTab] = useState('Home');
   const [theme, setTheme] = useState('dark');
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [isExplorerOpen, setIsExplorerOpen] = useState(true);
+  const [isExplorerOpen, setIsExplorerOpen] = useState(false);
   const [openFiles, setOpenFiles] = useState(['Home']);
   const location = useLocation();
 
@@ -59,6 +59,12 @@ const Layout = () => {
   useEffect(() => {
     document.body.className = theme;
   }, [theme]);
+
+  useEffect(() => {
+    if (location.pathname === '/projects') {
+      setIsExplorerOpen(true);
+    }
+  }, [location]);
 
   return (
     <div className={`flex flex-col h-screen ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-white text-black'}`}>
